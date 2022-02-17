@@ -1,0 +1,14 @@
+version: '3.8'
+services:
+  front:
+    image: node:14.18-alpine
+    command: sh -c "cd /app && yarn && yarn dev"
+    volumes:
+      - ./front:/app
+    ports:
+      - '3000:3000'
+    environment:
+      - NEXT_PUBLIC_APOLLO_URI=https://countries.trevorblades.com/
+    networks:
+      - zephir
+
