@@ -1,6 +1,7 @@
-import type { NextPage } from 'next'
-import Head from 'next/head'
-import styles from '../styles/Home.module.css'
+import type { NextPage } from "next";
+import Head from "next/head";
+import styles from "../styles/Home.module.css";
+import ListUser from "../utils/components/ListUser";
 
 const Home: NextPage = () => {
   return (
@@ -12,6 +13,7 @@ const Home: NextPage = () => {
       </Head>
 
       <main className={styles.main}>
+        <ListUser />
       </main>
 
       <footer className={styles.footer}>
@@ -24,7 +26,7 @@ const Home: NextPage = () => {
         </a>
       </footer>
     </div>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;

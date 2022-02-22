@@ -45,7 +45,9 @@ import { UserModule } from './user/user.module';
       debug: true,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       subscriptions: {
-        'graphql-ws': true,
+        'subscriptions-transport-ws': {
+          path: '/graphql/subscriptions',
+        },
       },
     }),
     UserModule,
