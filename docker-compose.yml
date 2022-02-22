@@ -1,14 +1,59 @@
 version: '3.8'
 services:
   front:
-    image: node:14.18-alpine
-    command: sh -c "cd /app && yarn && yarn build && yarn start"
-    volumes:
-      - ./front:/app
+    container_name: z-next-prod
+    image: z-next-prod:latest
+    build: 
+      context: ./front
+      dockerfile: Dockerfile
     ports:
-      - '3000:3000'
+      - 3000:3000
     environment:
       - NEXT_PUBLIC_APOLLO_URI=https://countries.trevorblades.com/
     networks:
       - zephir
 
+  back:
+    container_name: z-nest-prod
+    image: z-nest-prod:latest
+    build: 
+      context: ./back
+      dockerfile: Dockerfile
+    ports:
+      - 3001:3001
+    environment:
+      TYPEORM_HOST: ${TYPEORM_HOST}
+      TYPEORM_PORT: ${TYPEORM_PORT}
+      TYPEORM_USERNAME: ${TYPEORM_USERNAME}
+      TYPEORM_PASSWORD: ${TYPEORM_PASSWORD}
+      TYPEORM_DATABASE: ${TYPEORM_DATABASE}
+      TYPEORM_CONNECTION: ${TYPEORM_CONNECTION}
+      TYPEORM_ENTITIES: ${TYPEORM_ENTITIES}
+      TYPEORM_MIGRATIONS: ${TYPEORM_MIGRATIONS}
+      TYPEORM_MIGRATIONS_TABLE_NAME: ${TYPEORM_MIGRATIONS_TABLE_NAME}
+      TYPEORM_MIGRATIONS_DIR: ${TYPEORM_MIGRATIONS_DIR}
+      CORS_ORIGIN: ${CORS_ORIGIN}
+    networks:
+      - zephir
+      - database
+
+
+  db:
+    container_name: z-db-prod
+    image: postgres:13-alpine
+    environment:
+      POSTGRES_PASSWORD: ${TYPEORM_PASSWORD}
+      POSTGRES_USER: ${TYPEORM_USERNAME}
+      POSTGRES_DB: ${TYPEORM_DATABASE}
+    ports:
+      - 5432:5432
+    volumes:
+      - ./volumes/postgres:/var/lib/postgresql/data
+    networks:
+      - database
+
+networks:
+  zephir:
+    name: zephir
+  database:
+    name: database
