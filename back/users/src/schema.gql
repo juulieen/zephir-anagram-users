@@ -1,0 +1,33 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type User {
+  id: ID!
+  email: String!
+  fib: String!
+}
+
+type Anagram {
+  id: ID!
+  user_id: Float!
+  anagram_map: String!
+}
+
+type Query {
+  user(id: String!): Anagram!
+  users: [User!]!
+}
+
+type Mutation {
+  addUser(newUserData: newUserInput!): User!
+  removeUser(id: String!): Boolean!
+}
+
+input newUserInput {
+  email: String!
+}
+
+type Subscription {
+  userAdded: User!
+}

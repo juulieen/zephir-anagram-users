@@ -1,0 +1,110 @@
+version: '3.8'
+services:
+  front:
+    container_name: z-next-prod
+    image: z-next-prod:latest
+    build:
+      context: ./front
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    environment:
+      - NEXT_PUBLIC_APOLLO_HTTP_URI=http://localhost:3001/graphql
+      - NEXT_PUBLIC_APOLLO_WS_URI=ws://localhost:3001/graphql/subscriptions
+    networks:
+      - zephir
+
+  back-users:
+    container_name: z-nest-user-prod
+    image: z-nest-user-prod:latest
+    build:
+      context: ./back/users
+      dockerfile: Dockerfile
+    ports:
+      - 3001:3001
+    environment:
+      TYPEORM_HOST: ${TYPEORM_HOST}
+      TYPEORM_PORT: ${TYPEORM_PORT}
+      TYPEORM_USERNAME: ${TYPEORM_USERNAME}
+      TYPEORM_PASSWORD: ${TYPEORM_PASSWORD}
+      TYPEORM_DATABASE: ${TYPEORM_DATABASE}
+      TYPEORM_CONNECTION: ${TYPEORM_CONNECTION}
+      TYPEORM_ENTITIES: ${TYPEORM_ENTITIES}
+      TYPEORM_MIGRATIONS: ${TYPEORM_MIGRATIONS}
+      TYPEORM_MIGRATIONS_TABLE_NAME: ${TYPEORM_MIGRATIONS_TABLE_NAME}
+      TYPEORM_MIGRATIONS_DIR: ${TYPEORM_MIGRATIONS_DIR}
+      CORS_ORIGIN: ${CORS_ORIGIN}
+      MATH_SERVICE_PORT: ${MATH_SERVICE_PORT}
+      MATH_SERVICE_HOST: ${MATH_SERVICE_HOST}
+      ANAGRAMS_SERVICE_PORT: ${ANAGRAMS_SERVICE_PORT}
+      ANAGRAMS_SERVICE_HOST: ${ANAGRAMS_SERVICE_HOST}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+    networks:
+      - zephir
+      - database
+
+  back-anagrams:
+    container_name: z-nest-anagrams-prod
+    image: z-nest-anagrams-prod:latest
+    build:
+      context: ./back/anagrams
+      dockerfile: Dockerfile
+    ports:
+      - 3003:3003
+    environment:
+      TYPEORM_HOST: ${TYPEORM_HOST}
+      TYPEORM_PORT: ${TYPEORM_PORT}
+      TYPEORM_USERNAME: ${TYPEORM_USERNAME}
+      TYPEORM_PASSWORD: ${TYPEORM_PASSWORD}
+      TYPEORM_DATABASE: ${TYPEORM_DATABASE}
+      TYPEORM_CONNECTION: ${TYPEORM_CONNECTION}
+      TYPEORM_ENTITIES: ${TYPEORM_ENTITIES}
+      TYPEORM_MIGRATIONS: ${TYPEORM_MIGRATIONS}
+      TYPEORM_MIGRATIONS_TABLE_NAME: ${TYPEORM_MIGRATIONS_TABLE_NAME}
+      TYPEORM_MIGRATIONS_DIR: ${TYPEORM_MIGRATIONS_DIR}
+      CORS_ORIGIN: ${CORS_ORIGIN}
+      REDIS_PORT: ${REDIS_PORT}
+    networks:
+      - zephir
+      - database
+  
+  back-math:
+    container_name: z-nest-math-prod
+    image: z-nest-math-prod:latest
+    build:
+      context: ./back/math
+      dockerfile: Dockerfile
+    environment:
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+    ports:
+      - 3002:3002
+    networks:
+      - zephir
+
+  redis:
+    container_name: z-redis-prod
+    image: redis:6.2.6-alpine
+    networks:
+      - zephir
+
+  db:
+    container_name: z-db-prod
+    image: postgres:13-alpine
+    environment:
+      POSTGRES_PASSWORD: ${TYPEORM_PASSWORD}
+      POSTGRES_USER: ${TYPEORM_USERNAME}
+      POSTGRES_DB: ${TYPEORM_DATABASE}
+    ports:
+      - 5432:5432
+    volumes:
+      - ./volumes/postgres:/var/lib/postgresql/data
+    networks:
+      - database
+
+networks:
+  zephir:
+    name: zephir
+  database:
+    name: database
