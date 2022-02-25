@@ -1,9 +1,12 @@
 import type { NextPage } from "next";
 import Head from "next/head";
+import { useState } from "react";
 import styles from "../styles/Home.module.css";
 import ListUser from "../utils/components/ListUser";
+import CreateUserForm from "../utils/components/CreateUserForm";
 
 const Home: NextPage = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   return (
     <div className={styles.container}>
       <Head>
@@ -14,6 +17,18 @@ const Home: NextPage = () => {
 
       <main className={styles.main}>
         <ListUser />
+        <button type="button" onClick={() => setIsModalOpen(true)}>
+          Create New User
+        </button>
+        {isModalOpen && (
+          <div className={styles.modal}>
+            <h1>Create New User</h1>
+            <CreateUserForm />
+            <button type="button" onClick={() => setIsModalOpen(false)}>
+              Close
+            </button>
+          </div>
+        )}
       </main>
 
       <footer className={styles.footer}>

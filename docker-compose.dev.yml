@@ -13,7 +13,7 @@ services:
     networks:
       - zephir
 
-  back:
+  back-users:
     image: node:14.18-alpine
     command: sh -c "cd /app && yarn && yarn start:dev"
     environment:
@@ -28,13 +28,64 @@ services:
       TYPEORM_MIGRATIONS_TABLE_NAME: ${TYPEORM_MIGRATIONS_TABLE_NAME}
       TYPEORM_MIGRATIONS_DIR: ${TYPEORM_MIGRATIONS_DIR}
       CORS_ORIGIN: ${CORS_ORIGIN}
+      MATH_SERVICE_PORT: ${MATH_SERVICE_PORT}
+      MATH_SERVICE_HOST: ${MATH_SERVICE_HOST}
+      ANAGRAMS_SERVICE_PORT: ${ANAGRAMS_SERVICE_PORT}
+      ANAGRAMS_SERVICE_HOST: ${ANAGRAMS_SERVICE_HOST}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
     volumes:
-      - ./back:/app
+      - ./back/users:/app
     ports:
       - 3001:3001
     networks:
       - zephir
       - database
+
+  back-math:
+    image: node:14.18-alpine
+    command: sh -c "cd /app && yarn && yarn start:dev"
+    volumes:
+      - ./back/math:/app
+    environment:
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+    ports:
+      - 3002:3002
+    networks:
+      - zephir
+  
+  back-anagrams:
+    image: node:14.18-alpine
+    command: sh -c "cd /app && yarn && yarn start:dev"
+    volumes:
+      - ./back/anagrams:/app
+    ports:
+      - 3003:3003
+    environment:
+      TYPEORM_HOST: ${TYPEORM_HOST}
+      TYPEORM_PORT: ${TYPEORM_PORT}
+      TYPEORM_USERNAME: ${TYPEORM_USERNAME}
+      TYPEORM_PASSWORD: ${TYPEORM_PASSWORD}
+      TYPEORM_DATABASE: ${TYPEORM_DATABASE}
+      TYPEORM_CONNECTION: ${TYPEORM_CONNECTION}
+      TYPEORM_ENTITIES: ${TYPEORM_ENTITIES}
+      TYPEORM_MIGRATIONS: ${TYPEORM_MIGRATIONS}
+      TYPEORM_MIGRATIONS_TABLE_NAME: ${TYPEORM_MIGRATIONS_TABLE_NAME}
+      TYPEORM_MIGRATIONS_DIR: ${TYPEORM_MIGRATIONS_DIR}
+      CORS_ORIGIN: ${CORS_ORIGIN}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+    networks:
+      - zephir
+      - database
+
+
+  redis:
+    container_name: z-redis-prod
+    image: redis:6.2.6-alpine
+    networks:
+      - zephir
 
   db:
     container_name: z-db-prod

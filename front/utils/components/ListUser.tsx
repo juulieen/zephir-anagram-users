@@ -28,7 +28,6 @@ const ListUser = () => {
   subscribeToMore<{userAdded: {id: string, email: string, fib: string}}>({
     document: SUBSCRIPTION_NEW_USER,
     updateQuery: (prev, { subscriptionData }) => {
-      console.log("subscriptionData", subscriptionData);
       if (!subscriptionData.data) return prev;
       if (
         prev.users.find(
